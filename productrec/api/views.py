@@ -106,7 +106,7 @@ def recommend(request , userId):
         pass
 
     # use the serializer to return the response
-
+@api_view(['GET'])
 def search(request ):
 
     query = request.GET.get('q')

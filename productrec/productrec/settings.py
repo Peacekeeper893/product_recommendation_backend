@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-*@%ax$^krr-ki1-p8#z+&d4#*4rkrc=f)nd^-iyveb1ucl6_mb
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+import os
+MEDIA_ROOT = os.path.join(BASE_DIR, 'ml')
 # Application definition
 
 INSTALLED_APPS = [

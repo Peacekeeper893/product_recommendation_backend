@@ -17,10 +17,10 @@ def getRoutes(request):
 
     routes = [
         {
-            'Endpoint': 'api/create-user/',
+            'Endpoint': 'api/create-user/?age=[users age]&gender=[users gender]',
             'method': 'GET',
             'body': None,
-            'description': 'Returns a newly created user id . Should be called if id is not present in the local storage'
+            'description': 'Returns a newly created user id . Should be called if id is not present in the local storage.Pass the age and gender as args'
         },
         {
             'Endpoint': '/api/add-search-data/',
@@ -53,11 +53,17 @@ def getRoutes(request):
 
 @api_view(['GET'])
 def createUser(request):
-    a = user(name = "test")
+
+    age = request.GET.get("age")
+    gender = request.GET.get("gender")
+
+    print(age , gender)
+    a = user(name = "test" , age = age , gender = gender)
     a.save()
     # mlt.add_user(a.id)
     serializer = userSerializer(a)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 def addSearchData(request ):

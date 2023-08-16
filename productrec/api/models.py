@@ -6,6 +6,7 @@ class user( models.Model ):
     id = models.AutoField(primary_key=True)
     name = models.CharField(null = True , max_length=50 )
     age = models.IntegerField(null=True)
+    gender = models.CharField(null=True , max_length=10)
     search_queries = models.TextField(default="" , max_length=10000)
     cart_items = models.TextField(default="" , max_length=10000)
 

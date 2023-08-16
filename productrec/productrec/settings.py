@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*@%ax$^krr-ki1-p8#z+&d4#*4rkrc=f)nd^-iyveb1ucl6_mb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["b474-2409-4051-2e97-8304-c85c-e246-e6c2-6a59.ngrok-free.app","localhost","127.0.0.1"]
 import os
 MEDIA_ROOT = os.path.join(BASE_DIR, 'ml')
 # Application definition

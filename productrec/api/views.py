@@ -7,7 +7,7 @@ from .models import user , product
 from django.http import HttpResponse
 
 from .serializers import userSerializer , productSerializer
-
+import setup as mlt
 
 
 # Create your views here.
@@ -55,7 +55,7 @@ def getRoutes(request):
 def createUser(request):
     a = user(name = "test")
     a.save()
-
+    # mlt.add_user(a.id)
     serializer = userSerializer(a)
     return Response(serializer.data)
 
@@ -88,7 +88,15 @@ def addCartData(request):
 
     curr_user = user.objects.filter(id = user_id)
     curr_items = curr_user[0].cart_items
-
+    rating = 1;
+    for x in curr_items.split(','):
+        if x == item_id:
+            rating += 1
+    user_obj = {
+        id: user_id,
+        'age': user.age,
+        'sex': user.gender
+    }
     try:
         curr_item = product.objects.filter(product_uid = item_id)
         prev = curr_item[0].users_interested
@@ -99,13 +107,10 @@ def addCartData(request):
     user.objects.filter(id = user_id).update(cart_items  = curr_items + "," + item_id )
     return HttpResponse("Done")
 
-
+@api_view(['GET'])
 def recommend(request , userId):
+    return mlt.recommend(userId)
 
-    def crazyMLcode():
-        pass
-
-    # use the serializer to return the response
 @api_view(['GET'])
 def search(request ):
 

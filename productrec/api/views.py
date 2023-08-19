@@ -60,7 +60,13 @@ def createUser(request):
     print(age , gender)
     a = user(name = "test" , age = age , gender = gender)
     a.save()
-    # mlt.add_user(a.id)
+    new_user = {
+        'id': a.id,
+        'age':int(age),
+        'sex':gender
+    }
+    print(new_user,new_user['id'])
+    mlt.add_user(new_user)
     serializer = userSerializer(a)
     return Response(serializer.data)
 
@@ -99,31 +105,43 @@ def addCartData(request):
         if x == item_id:
             rating += 1
     user_obj = {
-        id: user_id,
+        'id': int(user_id),
         'age': user.age,
-        'sex': user.gender
+        'sex': str(user.gender).upper() # ??
     }
-    try:
-        curr_item = product.objects.filter(product_uid = item_id)
+    print(user_obj, int(item_id), rating)
+    try:                        
+        curr_item = product.objects.filter(product_uid = str(item_id))
         prev = curr_item[0].users_interested
-        product.objects.filter(product_uid = item_id).update(users_interested = prev+1)
+        product.objects.filter(product_uid = str(item_id)).update(users_interested = prev+1)
     except:
         print("expected Exception")
 
-    user.objects.filter(id = user_id).update(cart_items  = curr_items + "," + item_id )
+    user.objects.filter(id = user_id).update(cart_items  = curr_items + "," + str(item_id) )
     return HttpResponse("Done")
 
+def get_items_from_ids(item_ids):
+    items = []
+    for item_id in item_ids:
+        try:
+            items.append(product.objects.filter(product_uid = item_id)[0])
+        except:
+            print("expected Exception")
+    return items
 @api_view(['GET'])
 def recommend(request , userId):
-    return mlt.recommend(userId)
-
+    item_ids = mlt.recommend(int(userId))
+    # map to product objects
+    items = get_items_from_ids(item_ids)
+    return Response(productSerializer(items , many = True).data)
 @api_view(['GET'])
 def search(request ):
 
     query = request.GET.get('q')
-    searchresults = product.objects.filter(product_title__icontains = query)
-    serializer = productSerializer(searchresults , many = True)
-    return Response(serializer.data)
+    item_ids = mlt.get_recommendation(query)
+    items = get_items_from_ids(item_ids)
+    return Response(productSerializer(items , many = True).data)
+
 
 
 

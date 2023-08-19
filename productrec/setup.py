@@ -43,7 +43,7 @@ def similar_terms(term):
     return get_cluster(cluster)
 def get_recommendation(term):
     cluster = search(term)
-    return df[df['cluster'] == cluster].index.tolist()
+    return df[df['cluster'] == cluster].index.tolist()[:10]
 
 ########################### User recommendation ##############
 
@@ -65,48 +65,35 @@ ifs = pickle.load(open(os.path.join(base_dir,'productrec/ml/ifs.pkl'), "rb"))
 nfs = pickle.load(open(os.path.join(base_dir,'productrec/ml/nfs.pkl'), "rb"))
 
 n_items = df.shape[0]
-
+# Save all loaded data in a file
+def save_all():
+    pickle.dump(dataset, open(os.path.join(base_dir,'productrec/ml/dataset.pkl'), "wb"))
+    pickle.dump(model, open(os.path.join(base_dir,'productrec/ml/model.pkl'), "wb"))
+    pickle.dump(nfs, open(os.path.join(base_dir,'productrec/ml/nfs.pkl'), "wb"))
+    
+def isNewUser(userId):
+    return userId not in dataset.mapping()[0]
 # helper function to add and update user model
 # add interaction data for old users
 def update_user(user, item_id, rating):
     global nfs,ufs
     user_id = user['id']
     (new_interactions,new_wts) = dataset.build_interactions([(user_id, item_id, rating)])
-    nfs +=  [ gen_user_feature(user ) ] 
     ufs = dataset.build_user_features(nfs)
     model.fit_partial(new_interactions,user_features=ufs,item_features=ifs, sample_weight=new_wts)
 # we cannot add new user without retraining the whole model
 # add interaction data for new users
-def add_user(userId):
-    dataset.fit_partial(users=[userId])
+def add_user(user:object):
+    global nfs,dataset
+    dataset.fit_partial(users=[user['id']])
+    nfs += ([ gen_user_feature(user) ]) 
 def get_item(id):
     return df.loc[id]
 # get recommendation for existing user
 def recommend(userId):
-    y = model.predict(userId,np.arange(n_items))
-    return [get_item(id_item_map[x]) for x in np.argsort(-y)][:4]
+    y = model.predict(userId,np.arange(n_items),item_features=ifs)
+    return [id_item_map[x] for x in np.argsort(-y)][:10]
     # return np.argsort(-y)[:4]
-# get recommendation for new user who has not interacted with any item
-def format_newuser_input(user_feature_map, user_feature_list):
-  normalised_val = 1.0 
-  target_indices = []
-  for feature in user_feature_list:
-    try:
-        target_indices.append(user_feature_map[feature])
-    except KeyError:
-        print("new user feature encountered '{}'".format(feature))
-        pass
-  new_user_features = np.zeros(len(user_feature_map.keys()))
-  for i in target_indices:
-    new_user_features[i] = normalised_val
-  new_user_features = sparse.csr_matrix(new_user_features)
-  return(new_user_features)
-def new_user_recommend(user):
-    new_user_features = gen_user_feature(user)[-1]
-    new_ufs = format_newuser_input(user_feature_map, new_user_features)
-    y = model.predict(0,np.arange(n_items),user_features=new_ufs)
-    return [get_item(id_item_map[x]) for x in np.argsort(-y)] [:4]
-    # return  np.argsort(y)[:4]
 
 if __name__ == "__main__":
     # print(model)
@@ -117,7 +104,9 @@ if __name__ == "__main__":
         'sex':'M'
     }
     # print(new_user_recommend(new_user))
-    add_user(3)
-    update_user(new_user,3168,2);
+    add_user(new_user);
+    # print(nfs,dataset.mapping()[0])
+    
+    # update_user(new_user,3168,2);
     print(recommend(3))
     # print(get_recommendation("shoe"))

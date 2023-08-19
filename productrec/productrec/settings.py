@@ -25,12 +25,13 @@ SECRET_KEY = 'django-insecure-*@%ax$^krr-ki1-p8#z+&d4#*4rkrc=f)nd^-iyveb1ucl6_mb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["b474-2409-4051-2e97-8304-c85c-e246-e6c2-6a59.ngrok-free.app","localhost","127.0.0.1"]
+ALLOWED_HOSTS = ["5469-2409-4051-4e93-7df4-996b-d745-b3cd-e26d.ngrok-free.app","9e2c-122-15-204-67.ngrok-free.app","16a1-2409-4051-2e97-8304-c85c-e246-e6c2-6a59.ngrok-free.app","9d0d-2409-4051-2e97-8304-c85c-e246-e6c2-6a59.ngrok-free.app","b474-2409-4051-2e97-8304-c85c-e246-e6c2-6a59.ngrok-free.app","localhost","127.0.0.1"]
 import os
 MEDIA_ROOT = os.path.join(BASE_DIR, 'ml')
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,3 +127,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOW_ALL_ORIGINS=True

@@ -4,13 +4,17 @@ import csv
 
 
 def run():
-    with open('api/fashion.csv') as file:
+    with open('api/fashion.csv' , encoding="utf-8") as file:
         reader = csv.reader(file)
         next(reader)  # Advance past the header
+
+        product.objects.all().delete()
 
 
         for row in reader:
 
-            pr = product(product_uid=row[0],product_title=row[7] ,product_img_url = row[8])
+            # print(type(row[4]))
+
+            pr = product(product_uid=row[0],product_title=row[1] ,product_img_url = row[2] ,product_description = row[3] , product_price = row[4] )
             pr.save()
             

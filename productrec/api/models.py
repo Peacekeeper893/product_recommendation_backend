@@ -18,6 +18,8 @@ class product(models.Model):
     product_uid = models.TextField(primary_key=True , max_length=100)
     product_title = models.TextField(max_length=100)
     product_img_url = models.TextField(max_length=800)
+    product_description = models.TextField(null=True , max_length=800)
+    product_price = models.TextField(default=0)
     users_interested = models.IntegerField(default=0)
     def __str__(self):
         return self.product_title[0:50]
